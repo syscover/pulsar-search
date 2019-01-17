@@ -1,0 +1,29 @@
+{
+    "name": "syscover/pulsar-search",
+    "description": "search engine to use with fuse.js",
+    "keywords": ["syscover","pulsar","laravel","search engine","fuse.js","fusejs"],
+    "authors": [
+        {
+            "name": "SYSCOVER SL",
+            "email": "info@syscover.com"
+        }
+    ],
+    "require": {
+        "php": "^7.1.3"
+    },
+    "autoload": {
+        "psr-4": {
+            "Syscover\\Search\\": "src/Syscover/Search"
+        },
+        "classmap": [
+            "src/Syscover/Search"
+        ]
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Syscover\\Search\\SearchServiceProvider"
+            ]
+        }
+    }
+}
