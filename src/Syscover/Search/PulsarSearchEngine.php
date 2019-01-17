@@ -1,9 +1,10 @@
 <?php namespace Syscover\Search;
 
-use Illuminate\Support\Facades\Storage;
 use Laravel\Scout\Engines\Engine;
 use Laravel\Scout\Builder;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Collection as BaseCollection;
+use Illuminate\Support\Facades\Storage;
 
 class PulsarSearchEngine extends Engine
 {
