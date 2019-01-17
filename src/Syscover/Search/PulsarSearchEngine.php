@@ -1,11 +1,21 @@
 <?php namespace Syscover\Search;
 
+use Illuminate\Support\Facades\Storage;
 use Laravel\Scout\Engines\Engine;
 use Laravel\Scout\Builder;
 use Illuminate\Database\Eloquent\Collection;
 
 class PulsarSearchEngine extends Engine
 {
+    private $tableName;
+    private $fileRoute;
+
+    private function setProperties($models)
+    {
+        $this->tableName = $models->first()->getTable();
+        $this->fileRoute = 'public/search/' . $this->tableName . '.json';
+    }
+
     /**
      * Update the given model in the index.
      *
@@ -14,10 +24,38 @@ class PulsarSearchEngine extends Engine
      */
     public function update($models)
     {
-        //
-        $json = $models->toJson();
-        info($json);
+        $this->setProperties($models);
 
+        if (Storage::exists($this->fileRoute))
+        {
+            // transform json to collection
+            $data = collect(json_decode(Storage::get($this->fileRoute), true));
+
+            foreach ($models as $model)
+            {
+                $match = false;
+
+                foreach ($data as $key => $item)
+                {
+                    if (
+                        (isset($model['ix']) && $item['ix'] === $model->ix) ||
+                        (isset($model['id']) && $item['id'] === $model->id)
+                    )
+                    {
+                        $match = true;
+                        $data[$key] = $model->toArray();
+                    }
+                }
+
+                if(!$match) $data->push($model->toArray());
+            }
+        }
+        else
+        {
+            $data = $models;
+        }
+
+        Storage::disk('local')->put($this->fileRoute, $data);
     }
 
     /**
@@ -28,7 +66,35 @@ class PulsarSearchEngine extends Engine
      */
     public function delete($models)
     {
-        //
+        $this->setProperties($models);
+
+        if (Storage::exists($this->fileRoute))
+        {
+            // transform json to collection
+            $data = collect(json_decode(Storage::get($this->fileRoute), true));
+
+            $match = false;
+            $dataFiltered = collect();
+            foreach ($models as $model)
+            {
+                foreach ($data as $item)
+                {
+                    if (
+                        (isset($model['ix']) && $item['ix'] === $model->ix) ||
+                        (isset($model['id']) && $item['id'] === $model->id)
+                    )
+                    {
+                        $match = true;
+                    }
+                    else
+                    {
+                        $dataFiltered->push($item);
+                    }
+                }
+            }
+
+            if ($match) Storage::disk('local')->put($this->fileRoute, $dataFiltered);
+        }
     }
 
     /**
