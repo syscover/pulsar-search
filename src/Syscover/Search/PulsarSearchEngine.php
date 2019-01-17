@@ -129,7 +129,7 @@ class PulsarSearchEngine extends Engine
      */
     public function mapIds($results)
     {
-        return Collection::make();
+        return BaseCollection::make();
     }
 
     /**
@@ -154,5 +154,16 @@ class PulsarSearchEngine extends Engine
     public function getTotalCount($results)
     {
         return count($results);
+    }
+
+    /**
+     * Flush all of the model's records from the engine.
+     *
+     * @param  \Illuminate\Database\Eloquent\Model  $model
+     * @return void
+     */
+    public function flush($model)
+    {
+        //
     }
 }
