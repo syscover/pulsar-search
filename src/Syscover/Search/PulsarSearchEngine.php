@@ -44,11 +44,11 @@ class PulsarSearchEngine extends Engine
                     )
                     {
                         $match = true;
-                        $data[$key] = $model->toArray();
+                        $data[$key] = $model->toSearchableArray();
                     }
                 }
 
-                if(!$match) $data->push($model->toArray());
+                if(!$match) $data->push($model->toSearchableArray());
             }
         }
         else
