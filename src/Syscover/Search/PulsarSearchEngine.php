@@ -53,7 +53,9 @@ class PulsarSearchEngine extends Engine
         }
         else
         {
-            $data = $models;
+            $data = $models->map(function($model) {
+                return $model->toSearchableArray();
+            });
         }
 
         Storage::disk('local')->put($this->fileRoute, $data);
