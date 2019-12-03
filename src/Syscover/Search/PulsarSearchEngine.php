@@ -25,6 +25,10 @@ class PulsarSearchEngine extends Engine
      */
     public function update($models)
     {
+        // reset keys, with php artisan scout:import "Syscover\..." command get a object with objects
+        // need call to values method to change object to array
+        $models = $models->values();
+
         $this->setProperties($models);
 
         if (Storage::exists($this->fileRoute))
